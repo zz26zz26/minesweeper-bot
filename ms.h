@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define inline __inline  // C in VC
+#define inline __inline  // for VC
+#define min __min  // for GCC
+#define max __max
 
 #define H 16
 #define W 30
@@ -23,8 +25,8 @@
 #define show_error(msg) { printf("%s\n", msg); output(board); output(trim); return -1; }
 
 // 要初始化必须用static
-static int dir[][2] = {{-1, 0}, { 1,0}, {0,-1}, {0,1},  // ↑-↓- ← - →
-                       {-1,-1}, {-1,1}, {1,-1}, {1,1}}; // ↖-↗-↙-↘
+static int dir[][2] = {{-1, 0}, { 1,0}, {0,-1}, {0,1},  // ↑ ↓ ← →
+                       {-1,-1}, {-1,1}, {1,-1}, {1,1}}; // ↖ ↗ ↙ ↘
 
 
 // 定义时参数比声明这少(调用与声明一致)不报错，要注意
@@ -39,13 +41,14 @@ int logic_kernel(int*, int*, int);
 int guess_kernel(int*, int*, int, double*, int*);
 
 
-inline int outofbound(int i, int j, int k)
+// 在头文件定义必须inline或static，否则链接时报错重定义
+static inline int outofbound(int i, int j, int k)
 { return (i+dir[k][0]<0 || i+dir[k][0]>=H || j+dir[k][1]<0 || j+dir[k][1]>=W); }
 
-inline int sub2idx(int row, int col)
+static inline int sub2idx(int row, int col)
 { return row*W + col; }
 
-inline void idx2sub(int idx, int *row, int *col)
+static inline void idx2sub(int idx, int *row, int *col)
 { *row = idx / W;  *col = idx % W; }  // 快速取余A % M = A - A/M*M = idx - *row*W降低并行度?
 
 

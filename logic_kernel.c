@@ -148,13 +148,13 @@ int mark_2(int *board, int *trim, int *mines)
                     rest2 += ISINDEP(status2[s]);
                     shared_tile += ISSHARE(status1[s]);  // 俩shared数量显然一样
                 }
-                if (shared_tile == 0)  continue;
+                if (rest1 == 0 || shared_tile == 0)  continue;  // 下面for只弄rest1的格子
 
                 shared_mine_max = min(min(num1, num2), shared_tile);
                 shared_mine_min = max(max(num1 - rest1, num2 - rest2), 0);
 
-                if (shared_mine_min >= num1 && rest1 > 0) {
-                    for (s = 0; s < 8; s++) {
+                if (shared_mine_min >= num1) {
+                    for (s = 0; s < 8; s++) {  // 公共区最少雷数已满足该格所需雷数，则剩余区都安全
                         if (ISINDEP(status1[s])) {  // unmark后trim中已没有INDEP以上的数了
                             clik = click(board, trim, i1 + dir[s][0], j1 + dir[s][1]);
                             if (clik < 0)  show_error("wrong mark_2 safe.");
@@ -163,14 +163,14 @@ int mark_2(int *board, int *trim, int *mines)
                     }
                 }
 
-                if (shared_mine_max <= num1 - rest1 && rest1 > 0) {
-                    for (s = 0; s < 8; s++) {
-                        if (ISINDEP(status1[s])) {
+                if (shared_mine_max <= num1 - rest1) {
+                    for (s = 0; s < 8; s++) {       // <=右边假设剩余区都是雷，此时公共区要放的雷最少
+                        if (ISINDEP(status1[s])) {  // 若公共区最大雷数还不满足需要，则剩余区只能全雷
                             r = sub2idx(i1 + dir[s][0], j1 + dir[s][1]);  // k还是s复制来要改啊
 
-                            if (trim[r] >= 0) {  // 没标过雷
-                                trim[r] = -9;    // mark2找到雷也要点开+trim
-                                (*mines)++;      // 不减的话给guess的数字就不对了啊
+                            if (trim[r] >= 0) {  // 防止重复标雷
+                                trim[r] = -9;    // mark2找到雷也要trim+点开
+                                (*mines)++;      // 不trim的话给guess的数字就不对了啊
                                 clik = mine_trim(board, trim, i1 + dir[s][0], j1 + dir[s][1]);
                                 if (clik < 0)  show_error("wrong mark_2 mine.");
                                 area += clik;

@@ -27,8 +27,8 @@ void output(int *board)
                         printf("%d?", t % CLICK);
                     else if (t < -50)
                         printf("-?");
-                    else
-                        printf("%2d", t);  // 绝对值1-8直接输出，负数表示已点开
+                    else                   // 绝对值1-8直接输出；负数表示已点开
+                        printf("%2d", t);  // 正数临时记录未点开格的周围已知雷数
             }
         }
         printf("\n");
@@ -121,7 +121,7 @@ int click(int *board, int *trim, int row, int col)
                 push_tiles_around_0;
             }
         }
-        // else (board[r] < 0)表示访问过，不增加area
+        // else即(board[r] < 0)表示访问过，不增加area
         //output(trim);
     }
     return area;
