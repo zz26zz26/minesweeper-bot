@@ -163,7 +163,7 @@ int mark_2(int *board, int *trim, int *mines)
                     }
                 }
 
-                if (shared_mine_max <= num1 - rest1) {  // 实际不会有小于或max取num1(会恰好=num2)
+                if (shared_mine_max <= num1 - rest1) {  // 实际原因只有num1-num2=rest1或min=max=share
                     for (s = 0; s < 8; s++) {       // <=右边假设剩余区都是雷，此时公共区要放的雷最少
                         if (ISINDEP(status1[s])) {  // 若公共区最大雷数还不满足需要，则剩余区只能全雷
                             r = sub2idx(i1 + dir[s][0], j1 + dir[s][1]);  // k还是s复制来要改啊
