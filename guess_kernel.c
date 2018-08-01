@@ -87,7 +87,7 @@ int guess_kernel(int *board, int *trim, int found_mine, double *prob, int *min_l
 
 			// 用double才够存组合数，注意函数名C大写
 			rest_case = Cnk(rest_tile,   rest_mine);    // 开局角落1，C(476,98)>1e103
-			rest_freq = Cnk(rest_tile-1, rest_mine-1);  // 没得放就是0
+			rest_freq = Cnk(rest_tile-1, rest_mine-1);  // 每个数字在C(n,k)中出现C(n-1,k-1)次
             used_case = used.case_count[s];
             used_freq = &(used.freq_board[H*W*s]);
 			for (int k = 0; k < H*W; k++) {  // 在数字旁和不在数字旁的未知格情况数交叉相乘
@@ -165,7 +165,7 @@ int guess_kernel(int *board, int *trim, int found_mine, double *prob, int *min_l
     // 要点开了
     if (minprob == 1.0) {
         k = 0;
-        mins = -1;          // 只有雷就不要点啊啊啊
+        mins = -1;          // 只有雷就不要点啊
         if (found_mine < MINE)  show_error("no guess, dead loop.");
     }
     else if (minprob > 0) {
@@ -284,7 +284,7 @@ double Cnk(int n, int k) {
 //     }
 // }
 
-// 要求a初始为升序从0开始依次加一；返回1表示还有下一个
+// 要求a初始为升序地从0开始依次加一；返回1表示还有下一个
 int next_combination(int n, int k, int *a) {
     int i;
     if (n <= 0 || k <= 0 || n < k)  return 0;  // n<k会死循环
@@ -325,7 +325,7 @@ int merge_case(double **freq_board, double *new_freq_board,
 			if (!*freq_board || !*case_count || !*num_mine)  return -1;
         }
 
-        *res_length = idx + 1;  // 放在realloc后不然读取越界啊啊啊啊
+        *res_length = idx + 1;  // 放在realloc后不然读取越界啊
         (*res_hash)[new_num_mine] = idx;
 
         (*num_mine)[idx] = new_num_mine;
@@ -377,7 +377,7 @@ int try_mine_recur(int *board, int *ii, int *jj, int max_mine, int max_depth,
             shared_idx[num_shared++] = k;
     }
 
-    // 命中率高的条件放前面
+    // 命中率高的条件放前面；要放的雷数超过格子数或已有雷数超过总雷数
     if (need_mine > num_shared + num_unshared || need_mine < 0)  return 0;
     if (cur_mine + need_mine > max_mine || cur_mine > max_mine)  return 0;
 
@@ -430,10 +430,10 @@ int try_mine_recur(int *board, int *ii, int *jj, int max_mine, int max_depth,
             } while (next_combination(num_shared, shared_mine, comb_shared));
         }
 
-        // 恢复非公共区格的现场...懒得写模板了，然后忘记判越界就heap corruption
-        if (num_unshared >= need_mine - shared_mine) {  // 不等号方向啊前面if改了这里忘了啊啊啊
+        // 恢复非公共区格的现场...注意忘记判越界会heap corruption
+        if (num_unshared >= need_mine - shared_mine) {  // 不等号方向啊前面if改了这里忘了啊
             for (int k = 0; k < 8; k++)  // 非公区必互不重合，退出时直接周围全0
-                if (ISINDEP(status[k]))  // 不然会越界，这里没有两圈墙啊啊啊
+                if (ISINDEP(status[k]))  // 不然会越界，这里没有两圈墙啊
                     freq_unshared[sub2idx(i+dir[k][0], j+dir[k][1])] = 0.0;
         }
     }

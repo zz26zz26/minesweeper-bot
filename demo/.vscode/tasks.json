@@ -1,0 +1,50 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "gcc",
+            "type": "shell",
+            "command": "C:/Program Files/mingw-7.3.0/mingw64/bin/gcc",
+            "args": [
+                "main_tester.c",
+                "logic_kernel.c",
+                "guess_kernel.c",
+                "-O2",
+                "-march=native",
+                "-fopenmp",
+                "-o", "tester.exe"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": {
+                "owner": "cpp",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceRoot}"
+                ],
+                "pattern": [
+                    {
+                        "regexp": "^([^:]*):(\\d+):(\\d+):\\s+(error|warning|info):\\s+(.*)$",
+                        "file": 1,
+                        "line": 2,
+                        "column": 3,
+                        "severity": 4,
+                        "message": 5
+                    },
+                    {
+                        "regexp": "^\\s(.*)$",
+                        "code": 1,
+                        "loop": true
+                    }
+                ]
+            }
+        }
+    ]
+}

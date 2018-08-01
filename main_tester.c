@@ -25,7 +25,7 @@ void output(int *board)
                 default:
                     if (t > CLICK)
                         printf("%d?", t % CLICK);
-                    else if (t < -50)
+                    else if (t < -50)      // 在click过程中被标记为要点开
                         printf("-?");
                     else                   // 绝对值1-8直接输出；负数表示已点开
                         printf("%2d", t);  // 正数临时记录未点开格的周围已知雷数
@@ -248,7 +248,7 @@ int main()
         // 但见omp for，又会把循环拆块分给这些线程跑；但用parallel for嵌套一般会慢
         // 并且omp atomic只支持标量算数运算，几乎不拖慢速度；critical放内层循环就比较明显了
         // 另外omp single/for/sections同属工作分配构造；master/atomic等属同步构造；前者不可嵌套
-        // 最后omp parallel/for/sections/single末尾含隐式barrier(可用omp for nowait之类的去掉)
+        // 最后omp parallel/for/sections/single末尾含隐式barrier(可在omp for之类后加nowait去掉)
         // PS：如果board为全局还可在声明后用omp threadprivate指定为线程全局，但不能用动态线程
         // PPS：C++才能在omp for里用for(int i...)；另发现改x64能快15%
         #pragma omp for schedule(dynamic)

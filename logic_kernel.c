@@ -153,8 +153,8 @@ int mark_2(int *board, int *trim, int *mines)
                 shared_mine_max = min(min(num1, num2), shared_tile);
                 shared_mine_min = max(max(num1 - rest1, num2 - rest2), 0);
 
-                if (shared_mine_min >= num1) {
-                    for (s = 0; s < 8; s++) {  // 公共区最少雷数已满足该格所需雷数，则剩余区都安全
+                if (shared_mine_min >= num1) {  // 数字的剩余区无雷时，公共区需要雷数最多
+                    for (s = 0; s < 8; s++) {   // 若公共区最少雷数已满足此需求，则剩余区都安全
                         if (ISINDEP(status1[s])) {  // unmark后trim中已没有INDEP以上的数了
                             clik = click(board, trim, i1 + dir[s][0], j1 + dir[s][1]);
                             if (clik < 0)  show_error("wrong mark_2 safe.");
@@ -163,7 +163,7 @@ int mark_2(int *board, int *trim, int *mines)
                     }
                 }
 
-                if (shared_mine_max <= num1 - rest1) {
+                if (shared_mine_max <= num1 - rest1) {  // 实际不会有小于或max取num1(会恰好=num2)
                     for (s = 0; s < 8; s++) {       // <=右边假设剩余区都是雷，此时公共区要放的雷最少
                         if (ISINDEP(status1[s])) {  // 若公共区最大雷数还不满足需要，则剩余区只能全雷
                             r = sub2idx(i1 + dir[s][0], j1 + dir[s][1]);  // k还是s复制来要改啊
