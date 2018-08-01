@@ -30,8 +30,8 @@ int guess_kernel(int *board, int *trim, int found_mine, double *prob, int *min_l
     double *freq_unshared, *inc_freq_board;
     res_info used;  // 在数字旁的可点格的各种概率
 
-	int cnk(int, int);
-	double Cnk(int, int);
+    int cnk(int, int);
+    double Cnk(int, int);
     int try_mine_recur(int*, int*, int*, int, int, int, int, double,
                        double*, double*, res_info*);
 
@@ -68,44 +68,44 @@ int guess_kernel(int *board, int *trim, int found_mine, double *prob, int *min_l
     }
 
     // trim已trim过，且已知格为负数，在里面做了转换
-	// 且不必再用realmin表示算过的格安全，数字旁可点肯定都是，0即可认为安全
+    // 且不必再用realmin表示算过的格安全，数字旁可点肯定都是，0即可认为安全
     retVal = try_mine_recur(trim, r_idx, c_idx, max_mine, max_depth,
                             0, 0, 1.0, freq_unshared, inc_freq_board, &used);
 
     if (retVal == 0) {
-		sum_case = 0;
-		rest_tile = 0;
+        sum_case = 0;
+        rest_tile = 0;
         memset(prob, 0, sizeof(double)*num_tiles);  // 后面是+=，得初始化啊啊啊
-		for (int k = 0; k < H*W; k++) {  // 没被markShared的远离数字的可点格
+        for (int k = 0; k < H*W; k++) {  // 没被markShared的远离数字的可点格
             rest_tile += ISCLICK(trim[k]);
-		}
+        }
 
-		for (int s = 0; s < used.res_length; s++) {
+        for (int s = 0; s < used.res_length; s++) {
             used_mine = used.num_mine[s];
-			rest_mine = MINE - found_mine - used_mine;
-			if (used_mine > max_mine || rest_mine > rest_tile)  continue;
+            rest_mine = MINE - found_mine - used_mine;
+            if (used_mine > max_mine || rest_mine > rest_tile)  continue;
 
-			// 用double才够存组合数，注意函数名C大写
-			rest_case = Cnk(rest_tile,   rest_mine);    // 开局角落1，C(476,98)>1e103
-			rest_freq = Cnk(rest_tile-1, rest_mine-1);  // 每个数字在C(n,k)中出现C(n-1,k-1)次
+            // 用double才够存组合数，注意函数名C大写
+            rest_case = Cnk(rest_tile,   rest_mine);    // 开局角落1，C(476,98)>1e103
+            rest_freq = Cnk(rest_tile-1, rest_mine-1);  // 每个数字在C(n,k)中出现C(n-1,k-1)次
             used_case = used.case_count[s];
             used_freq = &(used.freq_board[H*W*s]);
-			for (int k = 0; k < H*W; k++) {  // 在数字旁和不在数字旁的未知格情况数交叉相乘
+            for (int k = 0; k < H*W; k++) {  // 在数字旁和不在数字旁的未知格情况数交叉相乘
                 if (ISCLICK(trim[k]))   // 不在数字旁的未知格(可点格)
-					prob[k] += rest_freq * used_case;
+                    prob[k] += rest_freq * used_case;
                 else if (trim[k] >= 0)  // 数字旁未知格 (trim再mark后未知只剩可点/数字旁独立/公共)
                     prob[k] += used_freq[k] * rest_case;  // 数字旁可点肯定都是算过的
-			}
-			sum_case += used_case * rest_case;
-		}
+            }
+            sum_case += used_case * rest_case;
+        }
 
-		for (int k = 0; k < H*W; k++) {  // 算总概率
+        for (int k = 0; k < H*W; k++) {  // 算总概率
             if (trim[k] >= 0)
                 prob[k] /= sum_case;
             else
                 prob[k] = I_PROB;  // 已知格(雷/数字)要设为大数字
-		}
-	}
+        }
+    }
 
     // 恢复现场让后面发现确定的雷时点开周围不出错
     // 注意上面会用到公共区等信息来区分数字周围的格，算完概率再恢复
@@ -262,7 +262,7 @@ double Cnk(int n, int k) {
     if (k > n - k)  k = n - k;  // min(k, n-k)
 
     for (int i = 1; i <= k; i++)
-		res *= (n-i+1) / (double)i; // matlab为 (n-k+i)/i
+        res *= (n-i+1) / (double)i; // matlab为 (n-k+i)/i
     return res;
 }
 
@@ -322,7 +322,7 @@ int merge_case(double **freq_board, double *new_freq_board,
             *freq_board = (double*)realloc(*freq_board, sizeof(double)**res_capacity*H*W);
             *case_count = (double*)realloc(*case_count, sizeof(double)**res_capacity);
             *num_mine   =    (int*)realloc(*num_mine,   sizeof(int)**res_capacity);
-			if (!*freq_board || !*case_count || !*num_mine)  return -1;
+            if (!*freq_board || !*case_count || !*num_mine)  return -1;
         }
 
         *res_length = idx + 1;  // 放在realloc后不然读取越界啊
@@ -333,7 +333,7 @@ int merge_case(double **freq_board, double *new_freq_board,
         memcpy(*freq_board + H*W*idx, new_freq_board, sizeof(double)*H*W);
     }
 
-	return 0;
+    return 0;
 }
 
 // 非公区对同一个雷数各格概率都一样(记下每格概率)，但由于相互独立，[公共区的一种排布]可搭配[非公区各自排出所有可能]
@@ -393,7 +393,7 @@ int try_mine_recur(int *board, int *ii, int *jj, int max_mine, int max_depth,
             cnk_unshared = cnk(num_unshared, unshared_mine);
 
             // 有格有雷，cnk>0算频数和概率；有格没雷，非公区就全不放雷
-			unshared_prob = cnk(num_unshared-1, unshared_mine-1) / (double)cnk_unshared;
+            unshared_prob = cnk(num_unshared-1, unshared_mine-1) / (double)cnk_unshared;
 
             for (int k = 0; k < 8; k++)  // 不在非公区的格就0，和背景一样
                 if (ISINDEP(status[k]))  // unshared
@@ -438,5 +438,5 @@ int try_mine_recur(int *board, int *ii, int *jj, int max_mine, int max_depth,
         }
     }
 
-	return 0;
+    return 0;
 }
